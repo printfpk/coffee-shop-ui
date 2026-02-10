@@ -100,21 +100,11 @@ function App() {
             {coffeeTypes.map((coffee, index) => (
               <div
                 key={coffee.id}
-                className={`absolute flex items-center justify-center transition-all duration-500 ease-out ${
-                  index === currentIndex
-                    ? 'opacity-100 translate-y-0'
-                    : direction === 'down'
-                    ? index < currentIndex
-                      ? 'opacity-0 -translate-y-24'
-                      : 'opacity-0 translate-y-24'
-                    : index > currentIndex
-                    ? 'opacity-0 translate-y-24'
-                    : 'opacity-0 -translate-y-24'
-                }`}
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
               >
                 <CoffeeScene 
                   mainImage={coffee.image} 
-                  isAnimating={isAnimating} 
+                  isActive={index === currentIndex} 
                 />
               </div>
             ))}
