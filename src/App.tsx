@@ -10,6 +10,14 @@ function App() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeModal, setActiveModal] = useState<'search' | 'menu' | 'story' | 'bag' | null>(null);
   const [direction, setDirection] = useState<'up' | 'down'>('down');
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+
+  const menuItems = {
+    'Espresso': ['Single Origin', 'Americano', 'Cortado', 'Flat White'],
+    'Signature': ['Caramel Macchiato', 'Hazelnut Latte', 'Vanilla Bean', 'Honey Lavender'],
+    'Seasonal': ['Pumpkin Spice', 'Peppermint Mocha', 'Maple Pecan', 'Gingerbread'],
+    'Pastries': ['Butter Croissant', 'Blueberry Muffin', 'Cinnamon Roll', 'Scone']
+  };
 
   const currentCoffee = coffeeTypes[currentIndex];
 
@@ -318,6 +326,48 @@ function App() {
               onClick={() => setActiveModal(null)}
             />
 
+            {/* Menu Preview Side Panel */}
+            <AnimatePresence mode='wait'>
+              {activeModal === 'menu' && hoveredCategory && (
+                <motion.div
+                  key={hoveredCategory}
+                  initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-28 right-[27rem] z-[70] w-60 bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-white/40"
+                >
+                  <div className="relative mb-4">
+                    <motion.h4 
+                      className="text-xs font-bold uppercase tracking-widest text-[#8b7768] pb-2"
+                    >
+                      {hoveredCategory}
+                    </motion.h4>
+                    <motion.div 
+                      className="absolute bottom-0 left-0 h-[1px] bg-[#8b7768]"
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                    />
+                  </div>
+                  <ul className="space-y-3">
+                    {menuItems[hoveredCategory as keyof typeof menuItems].map((item, idx) => (
+                      <motion.li 
+                        key={item}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="text-sm text-[#3d3229] font-medium flex items-center gap-3"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c4a77d]" />
+                        {item}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Modal Content container - same position for all */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -326,7 +376,7 @@ function App() {
               transition={{ duration: 0.2 }}
               className="absolute top-28 right-32 z-[70] w-72 bg-white rounded-2xl shadow-2xl p-6 overflow-hidden"
             >
-              <div className="flex justify-between items-center mb-4 border-b border-[#f5f0e8] pb-2">
+              <div className="flex justify-between items-center mb-4 pb-2 relative">
                 <span className="text-xs font-bold uppercase tracking-widest text-[#8b7768]">
                   {activeModal === 'search' && 'Select Coffee'}
                   {activeModal === 'menu' && 'Our Menu'}
@@ -339,6 +389,12 @@ function App() {
                 >
                   <X className="w-4 h-4" />
                 </button>
+                <motion.div 
+                  className="absolute bottom-0 left-0 h-[1px] bg-[#8b7768]"
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                />
               </div>
               
               <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto pr-1">
@@ -412,12 +468,30 @@ function App() {
 
                 {/* MENU MODAL CONTENT */}
                 {activeModal === 'menu' && (
-                   <div className="space-y-4">
-                      {['Espresso', 'Signature', 'Seasonal', 'Pastries'].map((category, i) => (
-                         <div key={category} className="p-3 bg-[#f5f0e8] rounded-xl">
-                            <h3 className="text-sm font-semibold text-[#3d3229] mb-1">{category}</h3>
-                            <p className="text-[10px] text-[#8b7768]">Explore our {category.toLowerCase()} selection</p>
-                         </div>
+                   <div className="space-y-4" onMouseLeave={() => setHoveredCategory(null)}>
+                      {Object.keys(menuItems).map((category) => (
+                         <motion.div 
+                            key={category} 
+                            className="p-3 bg-[#f5f0e8] rounded-xl cursor-pointer relative overflow-hidden"
+                            onMouseEnter={() => setHoveredCategory(category)}
+                            whileHover={{ 
+                                scale: 1.02, 
+                                backgroundColor: "rgba(232, 224, 213, 1)", 
+                                x: 5
+                            }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                         >
+                            <h3 className="text-sm font-semibold text-[#3d3229] mb-1 relative z-10">{category}</h3>
+                            <p className="text-[10px] text-[#8b7768] relative z-10">Explore our {category.toLowerCase()} selection</p>
+                            
+                            {/* Hover highlight decorative line */}
+                            <motion.div 
+                                className="absolute left-0 top-0 bottom-0 w-1 bg-[#c4a77d]" 
+                                initial={{ scaleY: 0 }}
+                                whileHover={{ scaleY: 1 }}
+                                transition={{ duration: 0.2 }}
+                            />
+                         </motion.div>
                       ))}
                    </div>
                 )}
