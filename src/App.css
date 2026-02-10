@@ -1,0 +1,58 @@
+/* App-specific styles */
+
+/* Smooth transitions for all interactive elements */
+button {
+  cursor: pointer;
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid #c4a77d;
+  outline-offset: 2px;
+}
+
+/* Ensure images don't overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Custom selection color */
+::selection {
+  background-color: rgba(196, 167, 125, 0.3);
+  color: inherit;
+}
+
+/* Prevent text selection during animations */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Smooth easing for transitions */
+.ease-out {
+  transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Image shadow */
+.shadow-coffee {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 119, 104, 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 119, 104, 0.5);
+}
