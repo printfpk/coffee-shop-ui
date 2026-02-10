@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Facebook, Twitter, Instagram, ChevronUp, ChevronDown } from 'lucide-react';
+import { Facebook, Twitter, Instagram, ChevronUp, ChevronDown, Search, ShoppingBag, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { coffeeTypes } from './types/coffee';
 import { CoffeeScene } from './components/CoffeeScene';
 import './App.css';
@@ -7,6 +8,7 @@ import './App.css';
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [activeModal, setActiveModal] = useState<'search' | 'menu' | 'story' | 'bag' | null>(null);
   const [direction, setDirection] = useState<'up' | 'down'>('down');
 
   const currentCoffee = coffeeTypes[currentIndex];
@@ -70,19 +72,72 @@ function App() {
       {/* Main Content Container */}
       <div className="relative z-10 flex h-full">
         
+        {/* Global Split Navbar */}
+        <div className="absolute top-0 left-0 w-full z-50 flex h-24 pointer-events-none">
+          {/* Left Side - Logo */}
+          <div className="w-1/2 h-full flex items-center px-12 pointer-events-auto">
+             <div className="flex items-center gap-3">
+                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                  <ellipse cx="12" cy="12" rx="3" ry="5" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M12 7c-2 0-3 2-3 5s1 5 3 5" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+                </svg>
+                <div className="flex flex-col">
+                  <span className="font-serif text-lg font-bold text-white tracking-widest leading-none">
+                    COFFEE
+                  </span>
+                  <span className="text-[0.6rem] text-white/70 uppercase tracking-[0.2em] leading-none">
+                    House
+                  </span>
+                </div>
+             </div>
+          </div>
+
+          {/* Right Side - Navigation & Actions */}
+          <div className="w-1/2 h-full flex items-center justify-end px-12 pointer-events-auto">
+            <div className="flex items-center gap-12 bg-white/80 backdrop-blur-md px-10 py-4 rounded-full shadow-sm">
+                <nav className="flex items-center gap-8">
+                  {['Home', 'Menu', 'Story', 'Shop'].map((item) => (
+                    <a 
+                      key={item} 
+                      href="#"
+                      onClick={(e) => {
+                         e.preventDefault();
+                         if (item === 'Menu') setActiveModal('menu');
+                         if (item === 'Story') setActiveModal('story');
+                      }}
+                      className="text-xs font-bold uppercase tracking-widest text-[#8b7768] hover:text-[#3d3229] transition-colors relative group"
+                    >
+                      {item}
+                      <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#8b7768] transition-all duration-300 group-hover:w-full" />
+                    </a>
+                  ))}
+                </nav>
+                
+                <div className="flex items-center gap-6">
+                   <button 
+                      onClick={() => setActiveModal('search')}
+                      className="text-[#8b7768] hover:text-[#3d3229] transition-colors"
+                   >
+                      <Search className="w-5 h-5" />
+                   </button>
+                   <button 
+                      onClick={() => setActiveModal('bag')}
+                      className="text-[#8b7768] hover:text-[#3d3229] transition-colors relative"
+                   >
+                      <ShoppingBag className="w-5 h-5" />
+                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#c4a77d] text-white text-[8px] flex items-center justify-center rounded-full">
+                        2
+                      </span>
+                   </button>
+                </div>
+            </div>
+          </div>
+        </div>
+
         {/* Left Panel - Image Section */}
         <div className="relative w-1/2 h-full overflow-hidden">
-          {/* Logo */}
-          <div className="absolute top-8 left-8 z-20 flex items-center gap-2">
-            <svg className="w-5 h-5 text-white/80" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-              <ellipse cx="12" cy="12" rx="3" ry="5" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M12 7c-2 0-3 2-3 5s1 5 3 5" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
-            <span className="font-serif text-sm font-medium text-white/80 tracking-wider">
-              Coffee Flavours
-            </span>
-          </div>
+          {/* Note: Navbar is now global */}
 
           {/* SCROLL DOWN indicator */}
           <div className="absolute left-6 bottom-12 z-20 flex flex-col items-center gap-3">
@@ -152,18 +207,7 @@ function App() {
 
         {/* Right Panel - Content Section */}
         <div className="relative w-1/2 h-full bg-[#f5f0e8]">
-          {/* Social Icons */}
-          <div className="absolute top-8 right-8 flex items-center gap-4">
-            <button className="w-8 h-8 rounded-full border border-[#d4c4b0] flex items-center justify-center text-[#8b7768] hover:bg-[#e8dcc8] transition-colors duration-300">
-              <Facebook className="w-3.5 h-3.5" />
-            </button>
-            <button className="w-8 h-8 rounded-full border border-[#d4c4b0] flex items-center justify-center text-[#8b7768] hover:bg-[#e8dcc8] transition-colors duration-300">
-              <Twitter className="w-3.5 h-3.5" />
-            </button>
-            <button className="w-8 h-8 rounded-full border border-[#d4c4b0] flex items-center justify-center text-[#8b7768] hover:bg-[#e8dcc8] transition-colors duration-300">
-              <Instagram className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          {/* Note: Navbar is now global */}
 
           {/* Content Container */}
           <div className="relative h-full flex flex-col justify-center px-20 pr-28">
@@ -235,14 +279,243 @@ function App() {
                       : 'opacity-0 -translate-y-full'
                   }`}
                 >
-                  <button 
-                    className="px-8 py-2.5 bg-[#c4a77d] text-white text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#b89b6f] transition-colors duration-300"
+                  <motion.button 
+                    className="px-8 py-2.5 text-white text-xs font-medium tracking-[0.15em] uppercase hover:opacity-90 transition-all duration-300 rounded-full shadow-md"
+                    style={{ backgroundColor: getCoffeeColor(index) }}
+                    initial="initial"
+                    whileHover="hover"
                   >
-                    Order Now
-                  </button>
+                    <motion.span
+                      className="block"
+                      variants={{
+                        initial: { y: 0 },
+                        hover: { 
+                          y: [0, -5, 0],
+                          transition: { 
+                             duration: 0.3,
+                             ease: "easeInOut" 
+                          } 
+                        }
+                      }}
+                    >
+                      Order Now
+                    </motion.span>
+                  </motion.button>
                 </div>
               ))}
             </div>
+
+      {/* Modal Overlay System */}
+      <AnimatePresence>
+        {activeModal && (
+          <>
+            {/* Backdrop Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-md"
+              onClick={() => setActiveModal(null)}
+            />
+
+            {/* Modal Content container - same position for all */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-28 right-32 z-[70] w-72 bg-white rounded-2xl shadow-2xl p-6 overflow-hidden"
+            >
+              <div className="flex justify-between items-center mb-4 border-b border-[#f5f0e8] pb-2">
+                <span className="text-xs font-bold uppercase tracking-widest text-[#8b7768]">
+                  {activeModal === 'search' && 'Select Coffee'}
+                  {activeModal === 'menu' && 'Our Menu'}
+                  {activeModal === 'story' && 'Our Story'}
+                  {activeModal === 'bag' && 'Your Bag'}
+                </span>
+                <button 
+                  onClick={() => setActiveModal(null)}
+                  className="text-[#8b7768] hover:text-[#3d3229]"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto pr-1">
+                {/* SEARCH MODAL CONTENT */}
+                {activeModal === 'search' && coffeeTypes.map((coffee, index) => (
+                  <motion.button
+                    key={coffee.id}
+                    onClick={() => {
+                        goToSlide(index, index > currentIndex ? 'down' : 'up');
+                        setActiveModal(null);
+                    }}
+                    initial="initial"
+                    animate="animate"
+                    whileHover="hover"
+                    variants={{
+                      initial: { opacity: 0, x: -20 },
+                      animate: { 
+                        opacity: 1, 
+                        x: 0,
+                        transition: { delay: index * 0.05 } 
+                      },
+                      hover: { 
+                        scale: 1.02, 
+                        x: 5,
+                        backgroundColor: "rgba(245, 240, 232, 1)", 
+                        transition: { type: "spring", stiffness: 400, damping: 10 }
+                      }
+                    }}
+                    className="flex items-center gap-3 p-2 rounded-lg text-left w-full relative overflow-hidden"
+                  >
+                     <motion.div 
+                      variants={{ hover: { x: ["-100%", "200%"] } }}
+                      transition={{ duration: 1, ease: "easeInOut" }}
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 -z-1" 
+                    />
+
+                    <div className="relative w-8 h-8 z-10 flex-shrink-0">
+                      {/* Pouring Stream Animation */}
+                      <motion.div
+                        className="absolute top-[40%] left-[8px] w-1.5 bg-[#3d3229] rounded-b-full origin-top"
+                        initial={{ height: 0, opacity: 0 }}
+                        variants={{
+                          hover: { 
+                            height: 22, 
+                            opacity: 1,
+                            transition: { delay: 0.1, duration: 0.3 }
+                          }
+                        }}
+                        style={{ zIndex: 0 }} 
+                      />
+                      
+                      {/* Cup Container */}
+                      <motion.div 
+                        className="relative w-full h-full rounded-full bg-[#f5f0e8] overflow-hidden"
+                        variants={{ hover: { rotate: -60, scale: 1.1 } }}
+                        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                        style={{ zIndex: 10 }}
+                      >
+                        <img src={coffee.image} alt={coffee.name} className="w-full h-full object-contain" />
+                      </motion.div>
+                    </div>
+                    
+                    <motion.span 
+                      className={`text-sm font-medium z-10 ${index === currentIndex ? 'text-[#3d3229]' : 'text-[#8b7768]'}`}
+                      variants={{ hover: { color: "#3d3229", x: 5, textShadow: "0px 0px 8px rgba(196,167,125,0.5)" } }}
+                    >
+                      {coffee.name}
+                    </motion.span>
+                  </motion.button>
+                ))}
+
+                {/* MENU MODAL CONTENT */}
+                {activeModal === 'menu' && (
+                   <div className="space-y-4">
+                      {['Espresso', 'Signature', 'Seasonal', 'Pastries'].map((category, i) => (
+                         <div key={category} className="p-3 bg-[#f5f0e8] rounded-xl">
+                            <h3 className="text-sm font-semibold text-[#3d3229] mb-1">{category}</h3>
+                            <p className="text-[10px] text-[#8b7768]">Explore our {category.toLowerCase()} selection</p>
+                         </div>
+                      ))}
+                   </div>
+                )}
+
+                {/* STORY MODAL CONTENT */}
+                {activeModal === 'story' && (
+                   <div className="space-y-3 text-[#6b5a4a]">
+                      <motion.p 
+                        className="text-xs leading-relaxed"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          visible: { transition: { staggerChildren: 0.02 } }
+                        }}
+                      >
+                        {"Founded in 2024, Coffee House began with a simple mission: to serve the perfect cup in a space that feels like home.".split("").map((char, index) => (
+                          <motion.span
+                            key={index}
+                            variants={{
+                              hidden: { opacity: 0 },
+                              visible: { opacity: 1 }
+                            }}
+                          >
+                            {char}
+                          </motion.span>
+                        ))}
+                      </motion.p>
+                      <motion.p 
+                        className="text-xs leading-relaxed"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          visible: { transition: { staggerChildren: 0.02, delayChildren: 2.3 } }
+                        }}
+                      >
+                         {"Every bean is ethically sourced, every roast is carefully monitored, and every cup is brewed with passion.".split("").map((char, index) => (
+                           <motion.span
+                             key={index}
+                             variants={{
+                               hidden: { opacity: 0 },
+                               visible: { opacity: 1 }
+                             }}
+                           >
+                             {char}
+                           </motion.span>
+                         ))}
+                      </motion.p>
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 4.5, duration: 0.5 }}
+                        className="h-24 bg-[#f5f0e8] rounded-xl flex items-center justify-center mt-2"
+                      >
+                         <span className="font-serif italic text-[#8b7768]">Est. 2024</span>
+                      </motion.div>
+                   </div>
+                )}
+
+                {/* BAG MODAL CONTENT */}
+                {activeModal === 'bag' && (
+                   <div className="flex flex-col h-full">
+                      <div className="flex-1 space-y-3">
+                         {/* Fake Items */}
+                         <div className="flex gap-3 items-center p-2 border-b border-[#f5f0e8]">
+                            <div className="w-10 h-10 bg-[#f5f0e8] rounded-md"></div>
+                            <div className="flex-1">
+                               <p className="text-xs font-bold text-[#3d3229]">Caramel Latte</p>
+                               <p className="text-[10px] text-[#8b7768]">Medium • Oat Milk</p>
+                            </div>
+                            <span className="text-xs font-semibold text-[#3d3229]">$4.50</span>
+                         </div>
+                         <div className="flex gap-3 items-center p-2 border-b border-[#f5f0e8]">
+                            <div className="w-10 h-10 bg-[#f5f0e8] rounded-md"></div>
+                            <div className="flex-1">
+                               <p className="text-xs font-bold text-[#3d3229]">Chocolate Croissant</p>
+                               <p className="text-[10px] text-[#8b7768]">Warm</p>
+                            </div>
+                            <span className="text-xs font-semibold text-[#3d3229]">$3.75</span>
+                         </div>
+                      </div>
+                      <div className="mt-4 pt-4 border-t border-[#f5f0e8]">
+                         <div className="flex justify-between mb-4">
+                            <span className="text-xs font-bold text-[#3d3229]">Total</span>
+                            <span className="text-xs font-bold text-[#3d3229]">$8.25</span>
+                         </div>
+                         <button className="w-full py-2 bg-[#c4a77d] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#b89b6f] transition-colors">
+                            Checkout
+                         </button>
+                      </div>
+                   </div>
+                )}
+
+
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
           </div>
         </div>
       </div>
