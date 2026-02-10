@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Facebook, Twitter, Instagram, ChevronUp, ChevronDown } from 'lucide-react';
 import { coffeeTypes } from './types/coffee';
+import { CoffeeScene } from './components/CoffeeScene';
 import './App.css';
 
 function App() {
@@ -111,13 +112,10 @@ function App() {
                     : 'opacity-0 -translate-y-24'
                 }`}
               >
-                <div className="relative w-80 h-80">
-                  <img
-                    src={coffee.image}
-                    alt={coffee.name}
-                    className="w-full h-full object-cover rounded-full shadow-2xl"
-                  />
-                </div>
+                <CoffeeScene 
+                  mainImage={coffee.image} 
+                  isAnimating={isAnimating} 
+                />
               </div>
             ))}
           </div>
