@@ -111,6 +111,45 @@ function App() {
           </div>
         </div>
 
+        {/* Navigation Controls - Centered */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-2 bg-white rounded-full py-4 px-1 shadow-xl">
+            {/* Up Arrow */}
+            <button 
+              onClick={prevSlide}
+              className="w-6 h-6 flex items-center justify-center text-[#a08060] hover:text-[#6b5a4a] transition-colors"
+              disabled={isAnimating}
+            >
+              <ChevronUp className="w-4 h-4" />
+            </button>
+
+            {/* Color Dots */}
+            <div className="flex flex-col gap-2">
+              {coffeeTypes.map((coffee, index) => (
+                <button
+                  key={coffee.id}
+                  onClick={() => goToSlide(index, index > currentIndex ? 'down' : 'up')}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? 'ring-1 ring-offset-1 ring-[#8b7768]'
+                      : 'opacity-70 hover:opacity-100'
+                  }`}
+                  style={{ backgroundColor: getCoffeeColor(index) }}
+                  disabled={isAnimating}
+                  aria-label={`Go to ${coffee.name}`}
+                />
+              ))}
+            </div>
+
+            {/* Down Arrow */}
+            <button 
+              onClick={nextSlide}
+              className="w-6 h-6 flex items-center justify-center text-[#a08060] hover:text-[#6b5a4a] transition-colors"
+              disabled={isAnimating}
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+        </div>
+
         {/* Right Panel - Content Section */}
         <div className="relative w-1/2 h-full bg-[#f5f0e8]">
           {/* Social Icons */}
@@ -204,45 +243,6 @@ function App() {
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Color Palette Selector */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
-            {/* Up Arrow */}
-            <button 
-              onClick={prevSlide}
-              className="w-6 h-6 flex items-center justify-center text-[#a08060] hover:text-[#6b5a4a] transition-colors"
-              disabled={isAnimating}
-            >
-              <ChevronUp className="w-4 h-4" />
-            </button>
-
-            {/* Color Dots */}
-            <div className="flex flex-col gap-2">
-              {coffeeTypes.map((coffee, index) => (
-                <button
-                  key={coffee.id}
-                  onClick={() => goToSlide(index, index > currentIndex ? 'down' : 'up')}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex
-                      ? 'ring-1 ring-offset-1 ring-[#8b7768]'
-                      : 'opacity-70 hover:opacity-100'
-                  }`}
-                  style={{ backgroundColor: getCoffeeColor(index) }}
-                  disabled={isAnimating}
-                  aria-label={`Go to ${coffee.name}`}
-                />
-              ))}
-            </div>
-
-            {/* Down Arrow */}
-            <button 
-              onClick={nextSlide}
-              className="w-6 h-6 flex items-center justify-center text-[#a08060] hover:text-[#6b5a4a] transition-colors"
-              disabled={isAnimating}
-            >
-              <ChevronDown className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </div>
