@@ -11,6 +11,42 @@ function App() {
   const [activeModal, setActiveModal] = useState<'search' | 'menu' | 'story' | 'bag' | 'mobile-nav' | null>(null);
   const [direction, setDirection] = useState<'up' | 'down'>('down');
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [mobileMenuExpanded, setMobileMenuExpanded] = useState(false);
+
+  // Complex modal animation variants
+  const modalVariants = {
+    hidden: { 
+      opacity: 0, 
+      scale: 0.9, 
+      y: 20, 
+      filter: "blur(10px)",
+      rotateX: 10,
+    },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0, 
+      filter: "blur(0px)",
+      rotateX: 0,
+      transition: { 
+        type: "spring",
+        damping: 25,
+        stiffness: 300,
+        mass: 0.8
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      scale: 0.9, 
+      y: 20, 
+      filter: "blur(10px)",
+      rotateX: -10,
+      transition: { 
+        duration: 0.2,
+        ease: "easeIn"
+      }
+    }
+  };
 
   const menuItems = {
     'Espresso': ['Single Origin', 'Americano', 'Cortado', 'Flat White'],
@@ -108,12 +144,19 @@ function App() {
                   {['Home', 'Menu', 'Story', 'Shop'].map((item) => (
                     <a 
                       key={item} 
-                      href="#"
+                      href={item === 'Shop' ? "https://www.instagram.com/printf_pk/" : "#"}
                       onClick={(e) => {
-                         e.preventDefault();
-                         if (item === 'Menu') setActiveModal('menu');
-                         if (item === 'Story') setActiveModal('story');
+                         if (item === 'Menu') {
+                            e.preventDefault();
+                            setHoveredCategory(null);
+                            setActiveModal('menu');
+                         }
+                         if (item === 'Story') {
+                           e.preventDefault();
+                           setActiveModal('story');
+                         }
                       }}
+                      target={item === 'Shop' ? '_blank' : undefined}
                       className="text-xs font-bold uppercase tracking-widest text-[#8b7768] hover:text-[#3d3229] transition-colors relative group"
                     >
                       {item}
@@ -181,18 +224,18 @@ function App() {
         </div>
 
         {/* Navigation Controls - Centered */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col max-md:flex-row items-center gap-2 bg-white rounded-full py-4 max-md:py-2 px-1 max-md:px-4 shadow-xl">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col max-md:flex-row items-center gap-2 bg-white rounded-full py-4 max-md:py-1.5 px-1 max-md:px-3 shadow-xl">
             {/* Up Arrow */}
             <button 
               onClick={prevSlide}
               className="w-6 h-6 flex items-center justify-center text-[#a08060] hover:text-[#6b5a4a] transition-colors"
               disabled={isAnimating}
             >
-              <ChevronUp className="w-4 h-4" />
+              <ChevronUp className="w-4 h-4 max-md:-rotate-90" />
             </button>
 
             {/* Color Dots */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 max-md:flex-row">
               {coffeeTypes.map((coffee, index) => (
                 <button
                   key={coffee.id}
@@ -215,7 +258,7 @@ function App() {
               className="w-6 h-6 flex items-center justify-center text-[#a08060] hover:text-[#6b5a4a] transition-colors"
               disabled={isAnimating}
             >
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-4 h-4 max-md:-rotate-90" />
             </button>
         </div>
 
@@ -293,8 +336,10 @@ function App() {
                       : 'opacity-0 -translate-y-full'
                   }`}
                 >
-                  <motion.button 
-                    className="px-8 py-2.5 text-white text-xs font-medium tracking-[0.15em] uppercase hover:opacity-90 transition-all duration-300 rounded-full shadow-md"
+                  <motion.a 
+                    href="https://www.instagram.com/printf_pk/"
+                    target="_blank"
+                    className="inline-block px-8 py-2.5 text-white text-xs font-medium tracking-[0.15em] uppercase hover:opacity-90 transition-all duration-300 rounded-full shadow-md"
                     style={{ backgroundColor: getCoffeeColor(index) }}
                     initial="initial"
                     whileHover="hover"
@@ -314,7 +359,7 @@ function App() {
                     >
                       Order Now
                     </motion.span>
-                  </motion.button>
+                  </motion.a>
                 </div>
               ))}
             </div>
@@ -328,8 +373,12 @@ function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
               className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-md"
-              onClick={() => setActiveModal(null)}
+              onClick={() => {
+                setActiveModal(null);
+                setHoveredCategory(null);
+              }}
             />
 
             {/* Menu Preview Side Panel */}
@@ -337,11 +386,11 @@ function App() {
               {activeModal === 'menu' && hoveredCategory && (
                 <motion.div
                   key={hoveredCategory}
-                  initial={{ opacity: 0, x: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-28 right-[27rem] max-md:right-4 max-md:left-4 max-md:top-24 z-[70] w-60 max-md:w-auto bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-white/40"
+                  variants={modalVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="absolute top-28 right-[27rem] max-md:fixed max-md:top-auto max-md:bottom-[34rem] max-md:left-4 max-md:right-4 max-md:w-auto max-md:translate-x-0 max-md:translate-y-0 z-[80] w-60 bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-white/40 max-md:max-h-[35vh] max-md:overflow-y-auto"
                 >
                   <div className="relative mb-4">
                     <motion.h4 
@@ -376,11 +425,15 @@ function App() {
 
             {/* Modal Content container - same position for all */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              transition={{ duration: 0.2 }}
-              className="absolute top-28 right-32 max-md:right-4 max-md:left-4 max-md:top-20 z-[70] w-72 max-md:w-auto bg-white rounded-2xl shadow-2xl p-6 overflow-hidden"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className={`absolute top-28 right-32 z-[70] w-72 bg-white rounded-2xl shadow-2xl p-6 overflow-hidden ${
+                activeModal === 'mobile-nav' 
+                  ? 'max-md:fixed max-md:top-24 max-md:left-0 max-md:right-0 max-md:m-0 max-md:w-full max-md:rounded-none max-md:border-t max-md:border-black/5' 
+                  : 'max-md:right-4 max-md:left-4 max-md:top-auto max-md:bottom-28 max-md:w-auto'
+              }`}
             >
               <div className="flex justify-between items-center mb-4 pb-2 relative">
                 <span className="text-xs font-bold uppercase tracking-widest text-[#8b7768]">
@@ -391,7 +444,10 @@ function App() {
                   {activeModal === 'mobile-nav' && 'Navigation'}
                 </span>
                 <button 
-                  onClick={() => setActiveModal(null)}
+                  onClick={() => {
+                    setActiveModal(null);
+                    setHoveredCategory(null);
+                  }}
                   className="text-[#8b7768] hover:text-[#3d3229]"
                 >
                   <X className="w-4 h-4" />
@@ -404,7 +460,7 @@ function App() {
                 />
               </div>
               
-              <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto pr-1">
+              <div className={`flex flex-col gap-1 overflow-y-auto pr-1 ${activeModal === 'mobile-nav' ? 'max-h-[75vh]' : 'max-h-[300px]'}`}>
                 {/* SEARCH MODAL CONTENT */}
                 {activeModal === 'search' && coffeeTypes.map((coffee, index) => (
                   <motion.button
@@ -481,8 +537,9 @@ function App() {
                             key={category} 
                             className="p-3 bg-[#f5f0e8] rounded-xl cursor-pointer relative overflow-hidden"
                             onMouseEnter={() => setHoveredCategory(category)}
+                            onClick={() => setHoveredCategory(category)}
                             whileHover={{ 
-                                scale: 1.02, 
+                                scale: 1.02,  
                                 backgroundColor: "rgba(232, 224, 213, 1)", 
                                 x: 5
                             }}
@@ -584,9 +641,13 @@ function App() {
                             <span className="text-xs font-bold text-[#3d3229]">Total</span>
                             <span className="text-xs font-bold text-[#3d3229]">$8.25</span>
                          </div>
-                         <button className="w-full py-2 bg-[#c4a77d] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#b89b6f] transition-colors">
+                         <a 
+                           href="https://www.instagram.com/printf_pk/"
+                           target="_blank"
+                           className="block w-full text-center py-2 bg-[#c4a77d] text-white text-xs font-bold uppercase rounded-lg hover:bg-[#b89b6f] transition-colors"
+                         >
                             Checkout
-                         </button>
+                         </a>
                       </div>
                    </div>
                 )}
@@ -595,23 +656,35 @@ function App() {
                  {activeModal === 'mobile-nav' && (
                   <div className="flex flex-col gap-4 py-2">
                     {['Home', 'Menu', 'Story', 'Shop'].map((item, idx) => (
-                      <motion.a 
-                        key={item} 
-                        href="#"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        onClick={(e) => {
-                           e.preventDefault();
-                           setActiveModal(null);
-                           if (item === 'Menu') setTimeout(() => setActiveModal('menu'), 300);
-                           if (item === 'Story') setTimeout(() => setActiveModal('story'), 300);
-                        }}
-                        className="text-lg font-serif font-bold text-[#3d3229] hover:text-[#8b7768] transition-colors flex items-center justify-between group"
-                      >
-                        {item}
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#c4a77d] opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </motion.a>
+                      <div key={item}>
+                        <motion.a 
+                          href={item === "Shop" ? "https://www.instagram.com/printf_pk/" : "#"}
+                          target={item === "Shop" ? "_blank" : undefined}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          onClick={(e) => {
+                             if (item === 'Menu') {
+                                e.preventDefault();
+                                setHoveredCategory(null);
+                                setActiveModal('menu');
+                             } else if (item === 'Story') {
+                               e.preventDefault();
+                               setActiveModal('story');
+                             } else if (item === 'Shop') {
+                               // Allow default behavior for Shop (link)
+                               setActiveModal(null);
+                             } else {
+                               e.preventDefault();
+                               setActiveModal(null);
+                             }
+                          }}
+                          className="text-lg font-serif font-bold text-[#3d3229] hover:text-[#8b7768] transition-colors flex items-center justify-between group"
+                        >
+                          {item}
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#c4a77d] opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </motion.a>
+                      </div>
                     ))}
                   </div>
                 )}
