@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Facebook, Twitter, Instagram, ChevronUp, ChevronDown, Search, ShoppingBag, X } from 'lucide-react';
+import { Facebook, Twitter, Instagram, ChevronUp, ChevronDown, Search, ShoppingBag, X, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { coffeeTypes } from './types/coffee';
 import { CoffeeScene } from './components/CoffeeScene';
@@ -8,7 +8,7 @@ import './App.css';
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [activeModal, setActiveModal] = useState<'search' | 'menu' | 'story' | 'bag' | null>(null);
+  const [activeModal, setActiveModal] = useState<'search' | 'menu' | 'story' | 'bag' | 'mobile-nav' | null>(null);
   const [direction, setDirection] = useState<'up' | 'down'>('down');
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
@@ -78,12 +78,12 @@ function App() {
       />
 
       {/* Main Content Container */}
-      <div className="relative z-10 flex h-full">
+      <div className="relative z-10 flex h-full max-md:flex-col">
         
         {/* Global Split Navbar */}
-        <div className="absolute top-0 left-0 w-full z-50 flex h-24 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full z-50 flex h-24 pointer-events-none max-md:justify-between">
           {/* Left Side - Logo */}
-          <div className="w-1/2 h-full flex items-center px-12 pointer-events-auto">
+          <div className="w-1/2 max-md:w-auto h-full flex items-center px-12 max-md:px-6 pointer-events-auto">
              <div className="flex items-center gap-3">
                 <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
@@ -102,9 +102,9 @@ function App() {
           </div>
 
           {/* Right Side - Navigation & Actions */}
-          <div className="w-1/2 h-full flex items-center justify-end px-12 pointer-events-auto">
-            <div className="flex items-center gap-12 bg-white/80 backdrop-blur-md px-10 py-4 rounded-full shadow-sm">
-                <nav className="flex items-center gap-8">
+          <div className="w-1/2 max-md:w-auto h-full flex items-center justify-end px-12 max-md:px-6 pointer-events-auto">
+            <div className="flex items-center gap-12 max-md:gap-4 bg-white/80 backdrop-blur-md px-10 max-md:px-4 py-4 max-md:py-2 rounded-full shadow-sm">
+                <nav className="flex items-center gap-8 max-md:hidden">
                   {['Home', 'Menu', 'Story', 'Shop'].map((item) => (
                     <a 
                       key={item} 
@@ -122,7 +122,7 @@ function App() {
                   ))}
                 </nav>
                 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 max-md:gap-4">
                    <button 
                       onClick={() => setActiveModal('search')}
                       className="text-[#8b7768] hover:text-[#3d3229] transition-colors"
@@ -138,17 +138,23 @@ function App() {
                         2
                       </span>
                    </button>
+                   <button 
+                      onClick={() => setActiveModal('mobile-nav')}
+                      className="hidden max-md:block text-[#8b7768] hover:text-[#3d3229] transition-colors"
+                   >
+                      <Menu className="w-5 h-5" />
+                   </button>
                 </div>
             </div>
           </div>
         </div>
 
         {/* Left Panel - Image Section */}
-        <div className="relative w-1/2 h-full overflow-hidden">
+        <div className="relative w-1/2 max-md:w-full h-full max-md:h-1/2 overflow-hidden">
           {/* Note: Navbar is now global */}
 
           {/* SCROLL DOWN indicator */}
-          <div className="absolute left-6 bottom-12 z-20 flex flex-col items-center gap-3">
+          <div className="absolute left-6 bottom-12 z-20 flex flex-col items-center gap-3 max-md:hidden">
             <div className="w-px h-16 bg-white/30" />
             <span 
               className="text-[10px] text-white/50 tracking-[0.2em] uppercase"
@@ -163,7 +169,7 @@ function App() {
             {coffeeTypes.map((coffee, index) => (
               <div
                 key={coffee.id}
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                className="absolute inset-0 flex items-center justify-center pointer-events-none max-md:scale-[0.55]"
               >
                 <CoffeeScene 
                   mainImage={coffee.image} 
@@ -175,7 +181,7 @@ function App() {
         </div>
 
         {/* Navigation Controls - Centered */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-2 bg-white rounded-full py-4 px-1 shadow-xl">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col max-md:flex-row items-center gap-2 bg-white rounded-full py-4 max-md:py-2 px-1 max-md:px-4 shadow-xl">
             {/* Up Arrow */}
             <button 
               onClick={prevSlide}
@@ -214,11 +220,11 @@ function App() {
         </div>
 
         {/* Right Panel - Content Section */}
-        <div className="relative w-1/2 h-full bg-[#f5f0e8]">
+        <div className="relative w-1/2 max-md:w-full h-full max-md:h-1/2 bg-[#f5f0e8]">
           {/* Note: Navbar is now global */}
 
           {/* Content Container */}
-          <div className="relative h-full flex flex-col justify-center px-20 pr-28">
+          <div className="relative h-full flex flex-col justify-center px-20 max-md:px-8 pr-28 max-md:pr-8">
             {/* Coffee Type Counter */}
             <div className="mb-4">
               <span className="text-xs text-[#8b7768] tracking-widest">
@@ -231,7 +237,7 @@ function App() {
               {coffeeTypes.map((coffee, index) => (
                 <h1
                   key={coffee.id}
-                  className={`absolute inset-0 font-serif text-4xl font-semibold text-[#3d3229] transition-all duration-500 ease-out ${
+                  className={`absolute inset-0 font-serif text-4xl max-md:text-3xl font-semibold text-[#3d3229] transition-all duration-500 ease-out ${
                     index === currentIndex
                       ? 'opacity-100 translate-y-0'
                       : direction === 'down'
@@ -253,7 +259,7 @@ function App() {
               {coffeeTypes.map((coffee, index) => (
                 <p
                   key={coffee.id}
-                  className={`absolute inset-0 text-[#6b5a4a] text-sm leading-relaxed max-w-sm transition-all duration-500 ease-out delay-75 ${
+                  className={`absolute inset-0 text-[#6b5a4a] text-sm leading-relaxed max-w-sm max-md:max-w-full transition-all duration-500 ease-out delay-75 ${
                     index === currentIndex
                       ? 'opacity-100 translate-y-0'
                       : direction === 'down'
@@ -335,7 +341,7 @@ function App() {
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 20, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute top-28 right-[27rem] z-[70] w-60 bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-white/40"
+                  className="absolute top-28 right-[27rem] max-md:right-4 max-md:left-4 max-md:top-24 z-[70] w-60 max-md:w-auto bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-6 border border-white/40"
                 >
                   <div className="relative mb-4">
                     <motion.h4 
@@ -374,7 +380,7 @@ function App() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-28 right-32 z-[70] w-72 bg-white rounded-2xl shadow-2xl p-6 overflow-hidden"
+              className="absolute top-28 right-32 max-md:right-4 max-md:left-4 max-md:top-20 z-[70] w-72 max-md:w-auto bg-white rounded-2xl shadow-2xl p-6 overflow-hidden"
             >
               <div className="flex justify-between items-center mb-4 pb-2 relative">
                 <span className="text-xs font-bold uppercase tracking-widest text-[#8b7768]">
@@ -382,6 +388,7 @@ function App() {
                   {activeModal === 'menu' && 'Our Menu'}
                   {activeModal === 'story' && 'Our Story'}
                   {activeModal === 'bag' && 'Your Bag'}
+                  {activeModal === 'mobile-nav' && 'Navigation'}
                 </span>
                 <button 
                   onClick={() => setActiveModal(null)}
@@ -582,6 +589,31 @@ function App() {
                          </button>
                       </div>
                    </div>
+                )}
+                
+                 {/* MOBILE NAV CONTENT */}
+                 {activeModal === 'mobile-nav' && (
+                  <div className="flex flex-col gap-4 py-2">
+                    {['Home', 'Menu', 'Story', 'Shop'].map((item, idx) => (
+                      <motion.a 
+                        key={item} 
+                        href="#"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        onClick={(e) => {
+                           e.preventDefault();
+                           setActiveModal(null);
+                           if (item === 'Menu') setTimeout(() => setActiveModal('menu'), 300);
+                           if (item === 'Story') setTimeout(() => setActiveModal('story'), 300);
+                        }}
+                        className="text-lg font-serif font-bold text-[#3d3229] hover:text-[#8b7768] transition-colors flex items-center justify-between group"
+                      >
+                        {item}
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c4a77d] opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </motion.a>
+                    ))}
+                  </div>
                 )}
 
 
