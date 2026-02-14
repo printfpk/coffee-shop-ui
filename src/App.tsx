@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Facebook, Twitter, Instagram, ChevronUp, ChevronDown, Search, ShoppingBag, X, Menu } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronUp, ChevronDown, Search, ShoppingBag, X, Menu } from 'lucide-react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { coffeeTypes } from './types/coffee';
 import { CoffeeScene } from './components/CoffeeScene';
 import './App.css';
@@ -11,10 +11,9 @@ function App() {
   const [activeModal, setActiveModal] = useState<'search' | 'menu' | 'story' | 'bag' | 'mobile-nav' | null>(null);
   const [direction, setDirection] = useState<'up' | 'down'>('down');
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
-  const [mobileMenuExpanded, setMobileMenuExpanded] = useState(false);
 
   // Complex modal animation variants
-  const modalVariants = {
+  const modalVariants: Variants = {
     hidden: { 
       opacity: 0, 
       scale: 0.9, 
@@ -217,6 +216,7 @@ function App() {
                 <CoffeeScene 
                   mainImage={coffee.image} 
                   isActive={index === currentIndex} 
+                  index={index}
                 />
               </div>
             ))}
