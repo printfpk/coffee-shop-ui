@@ -3,6 +3,7 @@ import { ChevronUp, ChevronDown, Search, ShoppingBag, X, Menu } from 'lucide-rea
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { coffeeTypes } from './types/coffee';
 import { CoffeeScene } from './components/CoffeeScene';
+import { CinematicBackground } from './components/CinematicBackground';
 import './App.css';
 
 function App() {
@@ -108,9 +109,12 @@ function App() {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Background with smooth transition */}
-      <div 
-        className={`absolute inset-0 transition-colors duration-700 ease-out ${currentCoffee.bgColor}`}
-      />
+      <div className="absolute inset-0">
+        <CinematicBackground 
+          gradient={currentCoffee.gradient} 
+          accentColor={currentCoffee.accentColor} 
+        />
+      </div>
 
       {/* Main Content Container */}
       <div className="relative z-10 flex h-full max-md:flex-col">
